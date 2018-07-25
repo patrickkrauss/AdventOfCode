@@ -2,7 +2,6 @@ package AdventOfCode.DayTen
 
 import AdventOfCode.ReadBytesFromFile
 import AdventOfCode.ReadInputFromFile
-import java.util.*
 
 // https://adventofcode.com/2017/day/10
 private class DayTen {
@@ -20,7 +19,6 @@ private class DayTen {
             val list = MutableList<Int>(256, { 0 })
             for (i in 0..list.size - 1)
                 list[i] = i
-
 
             return list
         }
@@ -86,15 +84,66 @@ private class DayTen {
 
     fun partTwo(input: ByteArray): Int {
 
-        fun addBytes(oldValues: ByteArray,newValues: ByteArray): ByteArray {
-            return oldValues.plus(','.toByte()).plus(newValues)
+        val salt = "17,31,73,47,23"
+
+        fun numberToAscii(number: Int): String {
+            if (number == 0) // a 'quick' fix
+                return "48"
+
+            val charsOfNumber = mutableListOf<Int>()
+            var value = number
+            var aux = number
+            while (aux > 0) {
+                charsOfNumber.add((value % 10).toString().get(0).toInt())
+                aux = value / 10
+                value = aux
+            }
+            charsOfNumber.reverse() //put the values in order
+            val result = StringBuilder()
+            for (c in charsOfNumber)
+                result.append(c)
+            return result.toString()
         }
 
+        fun stringToAscii(input: String): String {
+            val inputAsAscii = StringBuilder(input.length * 2)
+            for (number in input.split(",")) {
+                inputAsAscii.append(numberToAscii(number.toInt()))
+                inputAsAscii.append(44)
+            }
+            inputAsAscii.deleteCharAt(inputAsAscii.length - 1) // remove the last comma
+            inputAsAscii.deleteCharAt(inputAsAscii.length - 1)
+            return inputAsAscii.toString()
+        }
+
+        fun printAscii(asciiValues: String) {
+            val result = StringBuilder()
+            for (c in asciiValues.split("44")) {  // split the numbers by comma
+                for (i in 0..c.length - 1 step 2) {  // travel the number getting the first 2 chars
+                    val numberAscii = c[i].toString() + c[i + 1]
+                    val number = numberAscii.toInt() - 48
+                    result.append(number)
+                }
+                result.append(",")
+            }
+            result.deleteCharAt(result.length - 1)
+            println(result.toString())
+        }
+
+        fun runRounds(quantityOfRounds: Int) {
+            val c = "41,54,78,11,1,3,4,48521,255,254"
+            printAscii(stringToAscii(c))
+        }
 
         fun exe(): Int {
-            val l = listOf<String>("7","31","73","47","23")
-            val a = input.plus(l.map { it.toByte() })
-            println(Arrays.toString(a))
+            runRounds(2)
+/*
+            val a = stringToAscii("1,2,3")
+            println(a)
+
+            val b = printAscii(a)
+            println(b)
+*/
             return 2
         }
 
